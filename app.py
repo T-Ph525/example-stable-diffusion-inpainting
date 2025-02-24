@@ -1,12 +1,11 @@
 import torch
-from diffusers import AutoPipelineForInpainting
-import gradio as gr
+from diffusers import StableDiffusionXLInpaintPipeline
 from fastapi import FastAPI, UploadFile, File
 from io import BytesIO
 from PIL import Image
 
 # Load the inpainting pipeline with LoRA support
-pipeline = AutoPipelineForInpainting.from_pretrained(
+pipeline = StableDiffusionXLInpaintPipeline.from_pretrained(
     "mrcuddle/URPM-Inpainting", torch_dtype=torch.float16
 ).to("cuda")
 
@@ -28,35 +27,6 @@ def image_inpaint(image_input, mask_input, prompt_input, lora_enabled=False, lor
     
     image = pipeline(prompt=prompt_input, image=image_input, mask_image=mask_input).images[0]
     return image
-
-# Gradio interface function
-def gradio_interface():
-    with gr.Blocks() as demo:
-        gr.Markdown("## Image Inpainting Service")
-
-        with gr.Row():
-            with gr.Column():
-                image_input = gr.Image(type="pil", label="Upload Image")
-                mask_input = gr.Image(type="pil", label="Upload Mask")
-                prompt_input = gr.Textbox(label="Enter Prompt", placeholder="Describe what you want to inpaint")
-                lora_input = gr.Checkbox(label="Enable LoRA", value=False)
-                lora_path_input = gr.Textbox(label="LoRA Path (optional)", placeholder="Enter LoRA model path", visible=False)
-                submit_btn = gr.Button("Inpaint")
-
-            with gr.Column():
-                result_output = gr.Image(type="pil", label="Inpainted Image")
-
-        # Show LoRA path textbox if LoRA is enabled
-        lora_input.change(lambda value: {"visible": value}, inputs=[lora_input], outputs=[lora_path_input])
-        
-        # Connect the button click event with the image inpainting
-        submit_btn.click(
-            image_inpaint, 
-            inputs=[image_input, mask_input, prompt_input, lora_input, lora_path_input], 
-            outputs=result_output
-        )
-
-    demo.launch()
 
 # FastAPI setup for backend
 app = FastAPI()
@@ -85,5 +55,4 @@ async def inpaint_image(
 
 # Run FastAPI server (use Uvicorn for deployment)
 if __name__ == "__main__":
-    # You can run this using Uvicorn: uvicorn <filename>:app --reload
-    gradio_interface()
+  demo.launch()
