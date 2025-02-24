@@ -1,6 +1,7 @@
 import torch
 from diffusers import StableDiffusionXLInpaintPipeline
 from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import StreamingResponse
 from io import BytesIO
 from PIL import Image
 
@@ -55,4 +56,5 @@ async def inpaint_image(
 
 # Run FastAPI server (use Uvicorn for deployment)
 if __name__ == "__main__":
-  demo.launch()
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
