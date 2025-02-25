@@ -74,7 +74,7 @@ def is_safe_image(image: Image.Image) -> bool:
     predicted_class = vit_model.config.id2label[predicted_class_idx]
 
     # Define unsafe classes based on your criteria
-    unsafe_classes = ["violence", "gore", "disturbing"]  # Example classes
+    unsafe_classes = ["violence", "gore", "disturbing",  "underage", "minor", "child", "torture"]  # Example classes
     return predicted_class not in unsafe_classes
 
 # Health check route
