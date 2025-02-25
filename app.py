@@ -1,6 +1,6 @@
 import torch
 from fastapi import FastAPI, File, UploadFile, Form
-from diffusers import StableDiffusionXLPipeline, StableDiffusionImg2ImgXLPipeline
+from diffusers import StableDiffusionXLPipeline, StableDiffusionXLImg2ImgPipeline
 from pydantic import BaseModel
 from PIL import Image
 import io
