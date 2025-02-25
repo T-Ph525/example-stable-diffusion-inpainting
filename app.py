@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 from transformers import ViTFeatureExtractor, ViTForImageClassification, pipeline
 import torch
@@ -6,6 +6,7 @@ from PIL import Image
 import io
 import base64
 from typing import Optional
+from diffusers import StableDiffusionXLPipeline, StableDiffusionXLImg2ImgPipeline,StableDiffusionXLInpaintPipeline
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -92,7 +93,7 @@ class Txt2ImgRequest(BaseModel):
 @app.post("/txt2img")
 async def txt2img(request: Txt2ImgRequest):
     if not is_safe_prompt(request.prompt):
-        raise HTTPException(status_code=400, detail="Prompt is not safe.")
+        raise HTTPException(status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, detail="Prompt is not safe.")
 
     images = txt2img_pipe(
         prompt=request.prompt,
@@ -104,7 +105,7 @@ async def txt2img(request: Txt2ImgRequest):
 
     safe_images = [pil_to_base64(img) for img in images if is_safe_image(img)]
     if not safe_images:
-        raise HTTPException(status_code=400, detail="Generated images are not safe.")
+        raise HTTPException(status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, detail="Generated images are not safe.")
 
     return {"images": safe_images}
 
@@ -121,13 +122,13 @@ class Img2ImgRequest(BaseModel):
 @app.post("/img2img")
 async def img2img(request: Img2ImgRequest):
     if not is_safe_prompt(request.prompt):
-        raise HTTPException(status_code=400, detail="Prompt is not safe.")
+        raise HTTPException(status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, detail="Prompt is not safe.")
 
     image_bytes = base64.b64decode(request.image)
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
     if not is_safe_image(image):
-        raise HTTPException(status_code=400, detail="Input image is not safe.")
+        raise HTTPException(status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, detail="Input image is not safe.")
 
     images = img2img_pipe(
         prompt=request.prompt,
@@ -141,7 +142,7 @@ async def img2img(request: Img2ImgRequest):
 
     safe_images = [pil_to_base64(img) for img in images if is_safe_image(img)]
     if not safe_images:
-        raise HTTPException(status_code=400, detail="Generated images are not safe.")
+        raise HTTPException(status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, detail="Generated images are not safe.")
 
     return {"images": safe_images}
 
@@ -159,7 +160,7 @@ class InpaintRequest(BaseModel):
 @app.post("/inpaint")
 async def inpaint(request: InpaintRequest):
     if not is_safe_prompt(request.prompt):
-        raise HTTPException(status_code=400, detail="Prompt is not safe.")
+        raise HTTPException(status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, detail="Prompt is not safe.")
 
     image_bytes = base64.b64decode(request.image)
     mask_bytes = base64.b64decode(request.mask)
@@ -168,7 +169,7 @@ async def inpaint(request: InpaintRequest):
     mask = Image.open(io.BytesIO(mask_bytes)).convert("L")
 
     if not is_safe_image(image):
-        raise HTTPException(status_code=400, detail="Input image is not safe.")
+        raise HTTPException(status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, detail="Input image is not safe.")
 
     images = inpaint_pipe(
         prompt=request.prompt,
@@ -183,6 +184,6 @@ async def inpaint(request: InpaintRequest):
 
     safe_images = [pil_to_base64(img) for img in images if is_safe_image(img)]
     if not safe_images:
-        raise HTTPException(status_code=400, detail="Generated images are not safe.")
+        raise HTTPException(status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, detail="Generated images are not safe.")
 
     return {"images": safe_images}
