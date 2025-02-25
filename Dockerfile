@@ -9,7 +9,7 @@ COPY . /app
 
 # Install dependencies
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
-
+RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 # Expose the FastAPI port
 EXPOSE 8000
 
