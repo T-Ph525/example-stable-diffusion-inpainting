@@ -108,6 +108,3 @@ def gradio_ui():
         submit_btn.click(gr_generate, inputs=[mode, prompt, init_image, mask_image, strength, use_lora, lora_path], outputs=output_img)
 
     demo.launch()
-
-if __name__ == "__main__":
-    gradio_ui()
