@@ -1,17 +1,17 @@
-FROM python:3.10
+# Use a PyTorch image with CUDA support for GPU acceleration
+FROM pytorch/pytorch:2.0.1-cuda11.8-cudnn8-runtime
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the necessary files into the container
-COPY requirements.txt app.py /app/
+# Copy the application files
+COPY . /app
 
 # Install dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Set environment variables
-ENV GRADIO_SERVER_NAME="0.0.0.0"
-ENV GRADIO_SERVER_PORT=${GRADIO_SERVER_PORT:-8000}
+# Expose the FastAPI port
+EXPOSE 8000
 
-# Command to run the Gradio interface
-CMD ["python", "app.py"]
+# Run the FastAPI server
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
