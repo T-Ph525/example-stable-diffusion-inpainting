@@ -1,5 +1,5 @@
 # Use a PyTorch image with CUDA support for GPU acceleration
-FROM pytorch/pytorch:2.6.0-cuda11.8-cudnn9-devel
+FROM pytorch/pytorch:2.6.0-cuda11.8-cudnn9-runtime
 
 # Set the working directory inside the container
 WORKDIR /app
